@@ -1,48 +1,38 @@
-import jsQR from "jsqr";
+import { QRScannerWidget } from "./qr-scanner/qr-scanner.component"
+import { ResultModal } from "./result-modal/result-modal.component"
+import { Toast } from './toast/toast.component'
+import "./style.css"
 
-const video = document.getElementById("video") as HTMLVideoElement;
-const canvas = document.getElementById("canvas") as HTMLCanvasElement;
-const ctx = canvas.getContext("2d")!;
+const scannerRoot = document.getElementById("qr-scanner")!
+const modalRoot = document.getElementById("result-modal")!
+const toastRoot = document.getElementById("toast")!
 
-async function startCamera() {
-  const stream = await navigator.mediaDevices.getUserMedia({
-    video: { facingMode: "environment" }
-  });
+// init toasts
+const toast = Toast()
+toastRoot.innerHTML = toast.render()
+toast.hydrate(toastRoot)
 
-  video.srcObject = stream;
-  video.play();
-
-  requestAnimationFrame(scan);
-}
-
-function scan() {
-  if (video.readyState === video.HAVE_ENOUGH_DATA) {
-    canvas.width = video.videoWidth;
-    canvas.height = video.videoHeight;
-
-    ctx.drawImage(video, 0, 0, canvas.width, canvas.height);
-
-    const imageData = ctx.getImageData(
-      0,
-      0,
-      canvas.width,
-      canvas.height
-    );
-
-    const code = jsQR(
-      imageData.data,
-      imageData.width,
-      imageData.height
-    );
-
-    if (code) {
-      console.log("QR:", code.data);
-      alert(code.data);
-      return; // stop after first scan
-    }
+// init modal
+const modal = ResultModal({
+  onOpen: () => {
+    toast.info("Redirecting...")
+  },
+  onCopy: () => {
+    toast.info("Copied")
   }
+})
+modalRoot.innerHTML = modal.render()
+modal.hydrate(modalRoot)
 
-  requestAnimationFrame(scan);
-}
-
-startCamera();
+// init scanner
+const scanner = QRScannerWidget({
+  onResult: (data: string, model) => {
+    modal.showResult(data)
+    model.stop()
+  },
+  onError: (data) => {
+    toast.error(data.message)
+  }
+})
+scannerRoot.innerHTML = scanner.render()
+scanner.hydrate(scannerRoot)

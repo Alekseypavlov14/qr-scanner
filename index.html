@@ -1,16 +1,17 @@
 <!DOCTYPE html>
 <html lang="en">
-  <head>
-    <meta charset="UTF-8" />
-    <title>QR Scanner</title>
-    <style>
-      body { margin: 0; display: flex; justify-content: center; }
-      video, canvas { max-width: 100%; }
-    </style>
-  </head>
-  <body>
-    <video id="video" autoplay playsinline></video>
-    <canvas id="canvas" hidden></canvas>
-    <script type="module" src="/src/main.ts"></script>
-  </body>
+
+<head>
+  <meta charset="UTF-8" />
+  <title>QR Scanner</title>
+</head>
+
+<body>
+  <div id="qr-scanner"></div>
+  <div id="result-modal"></div>
+  <div id="toast"></div>
+
+  <script type="module" src="/src/main.ts"></script>
+</body>
+
 </html>
