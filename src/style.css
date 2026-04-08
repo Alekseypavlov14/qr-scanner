@@ -77,6 +77,7 @@ body {
   height: 100%;
 }
 .modal.hidden {
+  pointer-events: none;
   opacity: 0;
 }
 .modal-background {

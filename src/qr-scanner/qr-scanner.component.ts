@@ -1,8 +1,8 @@
 import { getCameraVideoStream } from '../camera/get-camera-video-stream'
 import { getQRCodeFromVideo } from '../scan-library/get-qr-code-from-video'
+import { videoHasEnoughData } from '../utils/video-has-enough-data'
 import { bindStreamToVideo } from '../utils/bind-stream-to-video'
 import { stopStream } from '../utils/stop-stream'
-import { videoHasEnoughData } from '../utils/video-has-enough-data'
 
 export interface QRScannerModel {
   start: () => void
@@ -61,17 +61,17 @@ export function QRScannerWidget(options: QRScannerOptions = {}) {
     }
   }
 
-  function scan() {
+  async function scan() {
     if (!running) return
 
     if (videoHasEnoughData(video)) {
       // get the code from the video frame
-      const code = getQRCodeFromVideo(video)
+      const code = await getQRCodeFromVideo(video)
 
       // if the qr code is parsed
-      if (code?.data) {
+      if (code) {
         stop()
-        return options.onResult?.(code.data, model)
+        return options.onResult?.(code, model)
       }
     }
 
