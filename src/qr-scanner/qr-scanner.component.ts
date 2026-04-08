@@ -14,15 +14,16 @@ export interface QRScannerOptions {
   onError?: (error: Error, model: QRScannerModel) => void
 }
 
+// scans per second
+const TPS = 5
+
 export function QRScannerWidget(options: QRScannerOptions = {}) {
-  // browser api
+  // refs and state
   let video: HTMLVideoElement
   let stream: MediaStream | null = null
-
-  // state
+  let intervalId: number | null = null
   let running = false
 
-  // model 
   const model: QRScannerModel = { start, stop }
 
   function render() {
@@ -40,12 +41,11 @@ export function QRScannerWidget(options: QRScannerOptions = {}) {
 
   async function start() {
     try {
-      // display the video from the camera on the screen
       stream = await getCameraVideoStream()
       await bindStreamToVideo(stream, video)
-
+      
       running = true
-      requestAnimationFrame(scan)
+      intervalId = window.setInterval(scan, 1000 / TPS)
     } catch (error: any) {
       options.onError?.(error, model)
     }
@@ -54,29 +54,25 @@ export function QRScannerWidget(options: QRScannerOptions = {}) {
   function stop() {
     running = false
 
+    if (intervalId) {
+      clearInterval(intervalId)
+      intervalId = null
+    }
+
     if (stream) {
-      // stop streaming from the camera
       stopStream(stream)
       stream = null
     }
   }
 
   async function scan() {
-    if (!running) return
+    if (!running || !videoHasEnoughData(video)) return
 
-    if (videoHasEnoughData(video)) {
-      // get the code from the video frame
-      const code = await getQRCodeFromVideo(video)
+    const code = await getQRCodeFromVideo(video)
+    if (!code) return
 
-      // if the qr code is parsed
-      if (code) {
-        stop()
-        return options.onResult?.(code, model)
-      }
-    }
-
-    // recursively call itself
-    requestAnimationFrame(scan)
+    stop()
+    options.onResult?.(code, model)
   }
 
   return { render, hydrate, model, start, stop }
