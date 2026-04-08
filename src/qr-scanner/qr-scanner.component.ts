@@ -75,9 +75,9 @@ export function QRScannerWidget(options: QRScannerOptions = {}) {
       }
     }
 
-    // recursively call self
+    // recursively call itself
     requestAnimationFrame(scan)
   }
 
-  return { render, hydrate, start, stop }
+  return { render, hydrate, model, start, stop }
 }

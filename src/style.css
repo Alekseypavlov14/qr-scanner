@@ -5,6 +5,7 @@
   --padding: 20px;
 
   --modal-z-index: 10;
+  --permission-z-index: 15;
   --toast-z-index: 20;
 }
 
@@ -174,4 +175,20 @@ body {
 }
 .toast.info {
   background: #1a73e8;
+}
+
+/* permission button */
+.permission-button {
+  position: fixed;
+  left: 50%;
+  transform: translateX(-50%);
+  bottom: var(--padding);
+
+  box-shadow: 0px 1px 4px 0px #0003;
+  cursor: pointer;
+
+  z-index: var(--permission-z-index);
+}
+.permission-button.hidden {
+  display: none;
 }
