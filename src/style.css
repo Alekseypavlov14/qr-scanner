@@ -61,9 +61,10 @@ body {
 .qr-scanner__video {
   width: 100%;
   height: 100%;
+  transition: 0.3;
 }
-.qr-scanner__canvas {
-  display: none;
+.qr-scanner.finished .qr-scanner__video {
+  opacity: 0;
 }
 
 /* modal */
@@ -75,18 +76,18 @@ body {
   height: 100%;
 }
 .modal.hidden {
-  display: none;
+  opacity: 0;
 }
 .modal-background {
   background-color: #0003;
-
+  
   width: 100%;
   height: 100%;
-
+  
   display: flex;
   align-items: center;
   justify-content: center;
-
+  
   padding: var(--padding);
 }
 .modal-content {
@@ -94,9 +95,15 @@ body {
   padding: 16px 12px;
   background-color: #fff;
   box-shadow: 0px 1px 4px 0px #0003;
-
+  
   max-width: var(--control-max-size);
   width: 100%;
+
+  transition: 0.3s;
+}
+.modal.hidden .modal-content {
+  transform: translateY(10px);
+  opacity: 0;
 }
 
 /* Message */
