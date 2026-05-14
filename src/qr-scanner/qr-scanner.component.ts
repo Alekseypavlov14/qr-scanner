@@ -1,6 +1,10 @@
 import { getCameraVideoStream } from '../camera/get-camera-video-stream'
+
+import { scanQRCodeAPIIntegration } from '../backend/api.integration'
 import { getQRCodeFromVideo } from '../scan-library/get-qr-code-from-video'
+
 import { videoHasEnoughData } from '../utils/video-has-enough-data'
+import { captureFrameAsFile } from '../utils/capture-frame-from-video'
 import { bindStreamToVideo } from '../utils/bind-stream-to-video'
 import { stopStream } from '../utils/stop-stream'
 
@@ -67,8 +71,18 @@ export function QRScannerWidget(options: QRScannerOptions = {}) {
 
   async function scan() {
     if (!running || !videoHasEnoughData(video)) return
+    
+    // uses local scanning lib
+    const frontendPromise = getQRCodeFromVideo(video)
+    
+    // uses more powerful restore+scan api
+    const backendPromise = captureFrameAsFile(video)
+      .then(scanQRCodeAPIIntegration)
+      .catch(() => null)
 
-    const code = await getQRCodeFromVideo(video)
+    // use the fastest response
+    const code = await Promise.race([frontendPromise, backendPromise])
+
     if (!code) return
 
     stop()
