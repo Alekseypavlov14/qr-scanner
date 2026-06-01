@@ -33,6 +33,9 @@ const modal = ResultModal({
   },
   onCopy: () => {
     toast.info("Copied")
+  },
+  onContinue: () => {
+    scannerModel.start()
   }
 })
 modalRoot.innerHTML = modal.render()
@@ -57,3 +60,6 @@ const scanner = QRScannerWidget({
 scannerRoot.innerHTML = scanner.render()
 scanner.hydrate(scannerRoot)
 scannerModel = scanner.model
+
+// start application
+scannerModel.start()

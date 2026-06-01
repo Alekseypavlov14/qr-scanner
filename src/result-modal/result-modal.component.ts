@@ -1,14 +1,18 @@
 export interface ResultModalOptions {
   onOpen?: () => void
   onCopy?: () => void
+  onContinue?: () => void
 }
 
 export function ResultModal(options: ResultModalOptions = {}) {
   // components
   let root: HTMLElement
-  let messageEl: HTMLElement
-  let openBtn: HTMLButtonElement
-  let copyBtn: HTMLButtonElement
+  let background: HTMLDivElement
+  let content: HTMLDivElement
+
+  let messageElement: HTMLElement
+  let openButton: HTMLButtonElement
+  let copyButton: HTMLButtonElement
 
   // state
   let value = ""
@@ -34,32 +38,36 @@ export function ResultModal(options: ResultModalOptions = {}) {
 
   function hydrate(container: HTMLElement) {
     root = container.querySelector(".modal")!
-    messageEl = container.querySelector(".result-modal__text")!
-    openBtn = container.querySelector(".result-modal__open")!
-    copyBtn = container.querySelector(".result-modal__copy")!
+    background = container.querySelector(".modal-background")!
+    content = container.querySelector(".modal-content")!
 
-    openBtn.addEventListener("click", () => {
+    messageElement = container.querySelector(".result-modal__text")!
+    openButton = container.querySelector(".result-modal__open")!
+    copyButton = container.querySelector(".result-modal__copy")!
+
+    content.addEventListener('click', (e) => e.stopPropagation())
+    background.addEventListener('click', () => {
+      hideResult()
+      options.onContinue?.()
+    })
+
+    openButton.addEventListener("click", () => {
       if (value.startsWith("http")) {
         window.open(value, "_blank")
         options.onOpen?.()
       }
     })
 
-    copyBtn.addEventListener("click", () => {
+    copyButton.addEventListener("click", () => {
       navigator.clipboard.writeText(value)
       options.onCopy?.()
-    })
-
-    document.addEventListener("click", (e) => {
-      if (!e.target) return hideResult()
-      if (!root.contains(e.target as Node)) hideResult()
     })
   }
 
   function showResult(text: string) {
     value = text
-    messageEl.textContent = text
     root.classList.remove("hidden")
+    messageElement.textContent = text
   }
 
   function hideResult() {

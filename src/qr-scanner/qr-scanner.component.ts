@@ -40,7 +40,6 @@ export function QRScannerWidget(options: QRScannerOptions = {}) {
 
   function hydrate(root: HTMLElement) {
     video = root.querySelector(".qr-scanner__video")!
-    start()
   }
 
   async function start() {
