@@ -36,6 +36,7 @@ const modal = ResultModal({
   },
   onContinue: () => {
     scannerModel.start()
+    toast.info('Loading...')
   }
 })
 modalRoot.innerHTML = modal.render()
